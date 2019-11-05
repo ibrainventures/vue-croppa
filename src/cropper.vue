@@ -122,6 +122,7 @@ export default {
       realHeight: 0, // only for when autoSizing is on
       chosenFile: null,
       useAutoSizing: false,
+      _redrawInNextTick: false,
     }
   },
 
@@ -181,9 +182,7 @@ export default {
           if (!this.img) {
             this.remove()
           } else {
-            this.$nextTick(() => {
-              this._draw()
-            })
+            this._drawBuffered()
           }
         }
       }, {
@@ -214,12 +213,12 @@ export default {
       if (!this.img) {
         this._setPlaceholders()
       } else {
-        this._draw()
+        this._drawBuffered()
       }
     },
     imageBorderRadius: function () {
       if (this.img) {
-        this._draw()
+        this._drawBuffered()
       }
     },
     placeholder: function () {
@@ -270,6 +269,7 @@ export default {
         this._preventZoomingToWhiteSpace()
         this._preventMovingToWhiteSpace()
       }
+      this._drawBuffered()
     },
     'imgData.width': function (val, oldVal) {
       // if (this.passive) return
@@ -278,7 +278,7 @@ export default {
       if (this.hasImage()) {
         if (Math.abs(val - oldVal) > (val * (1 / 100000))) {
           this.emitEvent(events.ZOOM_EVENT)
-          this._draw()
+          this._drawBuffered()
         }
       }
     },
@@ -286,17 +286,18 @@ export default {
       // if (this.passive) return
       if (!u.numberValid(val)) return
       this.scaleRatio = val / this.naturalHeight
+      this._drawBuffered()
     },
     'imgData.startX': function (val) {
       // if (this.passive) return
       if (this.hasImage()) {
-        this.$nextTick(this._draw)
+        this._drawBuffered()
       }
     },
     'imgData.startY': function (val) {
       // if (this.passive) return
       if (this.hasImage()) {
-        this.$nextTick(this._draw)
+        this._drawBuffered()
       }
     },
     loading (val) {
@@ -314,6 +315,10 @@ export default {
       } else {
         this._autoSizingRemove()
       }
+    },
+    orientation (val, oldVal) {
+      console.log(`Orientation changed: ${oldVal} -> ${val}`)
+      this._drawBuffered()
     }
   },
 
@@ -346,7 +351,7 @@ export default {
       }
       if (this.imgData.startX !== oldX || this.imgData.startY !== oldY) {
         this.emitEvent(events.MOVE_EVENT)
-        this._draw()
+        this._drawBuffered()
       }
     },
 
@@ -495,12 +500,14 @@ export default {
       this.originalImage = null
       this.img = null
       this.$refs.fileInput.value = ''
+      
       this.imgData = {
         width: 0,
         height: 0,
         startX: 0,
         startY: 0
       }
+
       this.orientation = 1
       this.scaleRatio = null
       this.userMetadata = null
@@ -722,7 +729,7 @@ export default {
           if (initial) {
             this._placeImage()
           } else {
-            this._draw()
+            this._drawBuffered()
           }
         }
       }
@@ -905,8 +912,8 @@ export default {
         this.zoom(false, 0)
       } else {
         this.move({ x: 0, y: 0 })
-        this._draw()
       }
+      this._drawBuffered()
     },
 
     _aspectFill () {
@@ -1192,6 +1199,24 @@ export default {
       this.ctx.fillStyle = backgroundColor
       this.ctx.clearRect(0, 0, this.outputWidth, this.outputHeight)
       this.ctx.fillRect(0, 0, this.outputWidth, this.outputHeight)
+    },
+
+    _drawBuffered () {
+      // queue draw calls, do a single redraw in next tick
+      this._redrawInNextTick = true
+      this.$nextTick(
+        () => {
+          if (this._redrawInNextTick) {
+            console.log("buffered redraw...", this.orientation)
+            this._redrawInNextTick = false
+            if (typeof window !== 'undefined' && window.requestAnimationFrame) {
+              requestAnimationFrame(this._drawFrame)
+            } else {
+              this._drawFrame()
+            }
+          }
+        }
+      )
     },
 
     _draw () {
