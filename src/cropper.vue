@@ -669,9 +669,19 @@ export default {
         return
       }
       this.currentIsInitial = true
-      if (u.imageLoaded(img)) {
-        // this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT)
-        this._onload(img, +img.dataset['exifOrientation'], true)
+
+      let onError = () => {
+        this._setPlaceholders()
+        this.loading = false
+      }
+      this.loading = true
+      if (img.complete) {
+        if (u.imageLoaded(img)) {
+          // this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT)
+          this._onload(img, +img.dataset['exifOrientation'], true)
+        } else {
+          onError()
+        }
       } else {
         this.loading = true
         img.onload = () => {
@@ -680,7 +690,7 @@ export default {
         }
 
         img.onerror = () => {
-          this._setPlaceholders()
+          onError()
         }
       }
     },
