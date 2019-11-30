@@ -495,11 +495,11 @@ export default {
     },
 
     getMetadataWithPixelDensity () {
-      let metaData = this.getMetadata()
-      if (metaData) {
+      let metadata = this.getMetadata()
+      if (metadata) {
         metadata.pixelDensity = this.quality
       }
-      return metaData
+      return metadata
     },
 
     supportDetection () {
