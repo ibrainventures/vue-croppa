@@ -435,7 +435,18 @@ export default {
     hasImage () {
       return !!this.imageSet
     },
+    applyMetadataWithPixelDensity (metadata) {
+      if (metadata) {
+        let storedPixelDensity = metadata.pixelDensity || 1
+        let currentPixelDensity = this.quality
+        let pixelDensityDiff = currentPixelDensity / storedPixelDensity
+        metadata.startX = metadata.startX * pixelDensityDiff
+        metadata.startY = metadata.startY * pixelDensityDiff
+        metadata.scale = metadata.scale * pixelDensityDiff
 
+        this.applyMetadata(metadata)
+      }
+    },
     applyMetadata (metadata) {
       if (!metadata || this.passive) return
       this.userMetadata = metadata
@@ -481,6 +492,14 @@ export default {
         scale: this.scaleRatio,
         orientation: this.orientation
       }
+    },
+
+    getMetadataWithPixelDensity () {
+      let metaData = this.getMetadata()
+      if (metaData) {
+        metadata.pixelDensity = this.quality
+      }
+      return metaData
     },
 
     supportDetection () {
