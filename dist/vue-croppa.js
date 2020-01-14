@@ -2,7 +2,7 @@
  * vue-croppa v1.3.8
  * https://github.com/zhanziyang/vue-croppa
  * 
- * Copyright (c) 2018 zhanziyang
+ * Copyright (c) 2020 zhanziyang
  * Released under the ISC license
  */
   
@@ -547,7 +547,7 @@ var component = { render: function render() {
       imageSet: false,
       currentPointerCoord: null,
       currentIsInitial: false,
-      loading: false,
+      _loading: false,
       realWidth: 0, // only for when autoSizing is on
       realHeight: 0, // only for when autoSizing is on
       chosenFile: null,
@@ -578,6 +578,25 @@ var component = { render: function render() {
         right: '15px',
         bottom: '10px'
       };
+    },
+
+
+    loading: {
+      get: function get$$1() {
+        return this._loading;
+      },
+      set: function set$$1(newValue) {
+        var oldValue = this._loading;
+        this._loading = newValue;
+        if (oldValue != newValue) {
+          if (this.passive) return;
+          if (newValue) {
+            this.emitEvent(events.LOADING_START_EVENT);
+          } else {
+            this.emitEvent(events.LOADING_END_EVENT);
+          }
+        }
+      }
     }
   },
 
@@ -729,14 +748,6 @@ var component = { render: function render() {
         this.$nextTick(this._draw);
       }
     },
-    loading: function loading(val) {
-      if (this.passive) return;
-      if (val) {
-        this.emitEvent(events.LOADING_START_EVENT);
-      } else {
-        this.emitEvent(events.LOADING_END_EVENT);
-      }
-    },
     autoSizing: function autoSizing(val) {
       this.useAutoSizing = !!(this.autoSizing && this.$refs.wrapper && getComputedStyle);
       if (val) {
@@ -809,6 +820,16 @@ var component = { render: function render() {
         x = 1 - speed;
       }
 
+      // when a new image is loaded with the same aspect ratio
+      // as the previously remove()d one, the imgData.width and .height
+      // effectivelly don't change (they change through one tick
+      // and end up being the same as before the tick, so the
+      // watchers don't trigger), make sure scaleRatio isn't null so
+      // that zooming works...
+      if (this.scaleRatio === null) {
+        this.scaleRatio = this.imgData.width / this.naturalWidth;
+      }
+
       this.scaleRatio *= x;
     },
     zoomIn: function zoomIn() {
@@ -841,6 +862,18 @@ var component = { render: function render() {
     },
     hasImage: function hasImage() {
       return !!this.imageSet;
+    },
+    applyMetadataWithPixelDensity: function applyMetadataWithPixelDensity(metadata) {
+      if (metadata) {
+        var storedPixelDensity = metadata.pixelDensity || 1;
+        var currentPixelDensity = this.quality;
+        var pixelDensityDiff = currentPixelDensity / storedPixelDensity;
+        metadata.startX = metadata.startX * pixelDensityDiff;
+        metadata.startY = metadata.startY * pixelDensityDiff;
+        metadata.scale = metadata.scale * pixelDensityDiff;
+
+        this.applyMetadata(metadata);
+      }
     },
     applyMetadata: function applyMetadata(metadata) {
       if (!metadata || this.passive) return;
@@ -894,6 +927,13 @@ var component = { render: function render() {
         orientation: this.orientation
       };
     },
+    getMetadataWithPixelDensity: function getMetadataWithPixelDensity() {
+      var metadata = this.getMetadata();
+      if (metadata) {
+        metadata.pixelDensity = this.quality;
+      }
+      return metadata;
+    },
     supportDetection: function supportDetection() {
       if (typeof window === 'undefined') return;
       var div = document.createElement('div');
@@ -907,13 +947,14 @@ var component = { render: function render() {
       this.$refs.fileInput.click();
     },
     remove: function remove() {
+      var keepChosenFile = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
       if (!this.imageSet) return;
       this._setPlaceholders();
 
       var hadImage = this.img != null;
       this.originalImage = null;
       this.img = null;
-      this.$refs.fileInput.value = '';
       this.imgData = {
         width: 0,
         height: 0,
@@ -924,7 +965,10 @@ var component = { render: function render() {
       this.scaleRatio = null;
       this.userMetadata = null;
       this.imageSet = false;
-      this.chosenFile = null;
+      if (!keepChosenFile) {
+        this.$refs.fileInput.value = '';
+        this.chosenFile = null;
+      }
       if (this.video) {
         this.video.pause();
         this.video = null;
@@ -946,6 +990,9 @@ var component = { render: function render() {
     },
     emitNativeEvent: function emitNativeEvent(evt) {
       this.emitEvent(evt.type, evt);
+    },
+    setFile: function setFile(file) {
+      this._onNewFileIn(file);
     },
     _setContainerSize: function _setContainerSize() {
       if (this.useAutoSizing) {
@@ -1081,9 +1128,19 @@ var component = { render: function render() {
         return;
       }
       this.currentIsInitial = true;
-      if (u.imageLoaded(img)) {
-        // this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT)
-        this._onload(img, +img.dataset['exifOrientation'], true);
+
+      var onError = function onError() {
+        _this4._setPlaceholders();
+        _this4.loading = false;
+      };
+      this.loading = true;
+      if (img.complete) {
+        if (u.imageLoaded(img)) {
+          // this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT)
+          this._onload(img, +img.dataset['exifOrientation'], true);
+        } else {
+          onError();
+        }
       } else {
         this.loading = true;
         img.onload = function () {
@@ -1092,7 +1149,7 @@ var component = { render: function render() {
         };
 
         img.onerror = function () {
-          _this4._setPlaceholders();
+          onError();
         };
       }
     },
@@ -1101,7 +1158,7 @@ var component = { render: function render() {
       var initial = arguments[2];
 
       if (this.imageSet) {
-        this.remove();
+        this.remove(true);
       }
       this.originalImage = img;
       this.img = img;
@@ -1317,8 +1374,8 @@ var component = { render: function render() {
         this.zoom(false, 0);
       } else {
         this.move({ x: 0, y: 0 });
-        this._draw();
       }
+      this._draw();
     },
     _aspectFill: function _aspectFill() {
       var imgWidth = this.naturalWidth;
