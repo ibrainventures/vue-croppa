@@ -761,7 +761,10 @@ export default {
         orientation = 1
       }
 
-      this._setOrientation(orientation)
+      if (!this.disableAutoOrientation) {
+        console.log('auto orientation')
+        this._setOrientation(orientation)
+      }
 
       if (initial) {
         this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT)

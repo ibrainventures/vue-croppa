@@ -373,6 +373,7 @@ var props = {
   },
   disabled: Boolean,
   disableDragAndDrop: Boolean,
+  disableAutoOrientation: Boolean,
   disableClickToChoose: Boolean,
   disableDragToMove: Boolean,
   disableScrollToZoom: Boolean,
@@ -1168,7 +1169,10 @@ var component = { render: function render() {
         orientation = 1;
       }
 
-      this._setOrientation(orientation);
+      if (!this.disableAutoOrientation) {
+        console.log('auto orientation');
+        this._setOrientation(orientation);
+      }
 
       if (initial) {
         this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
