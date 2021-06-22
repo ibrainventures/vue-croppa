@@ -202,7 +202,7 @@ export default {
 
     let supports = this.supportDetection()
     if (!supports.basic) {
-      console.warn('Your browser does not support vue-croppa functionality.')
+      // console.warn('Your browser does not support vue-croppa functionality.')
     }
 
     if (this.passive) {
@@ -435,7 +435,7 @@ export default {
       if (this.disableRotation || this.disabled || this.passive) return
       step = parseInt(step)
       if (isNaN(step) || step > 3 || step < -3) {
-        console.warn('Invalid argument for rotate() method. It should one of the integers from -3 to 3.')
+        // console.warn('Invalid argument for rotate() method. It should one of the integers from -3 to 3.')
         step = 1
       }
       this._rotateByStep(step)
@@ -491,7 +491,7 @@ export default {
 
     promisedBlob (...args) {
       if (typeof Promise == 'undefined') {
-        console.warn('No Promise support. Please add Promise polyfill if you want to use this method.')
+        // console.warn('No Promise support. Please add Promise polyfill if you want to use this method.')
         return
       }
       return new Promise((resolve, reject) => {
@@ -750,7 +750,6 @@ export default {
     },
 
     _onload (img, orientation = 1, initial) {
-      console.log('! Debug ! exif orient L730', orientation)
       if (this.imageSet) {
         this.remove(true)
       }
@@ -862,7 +861,7 @@ export default {
               this._onVideoLoad(video)
             } else {
               video.addEventListener('canplay', () => {
-                console.log('can play event')
+                // console.log('can play event')
                 this._onVideoLoad(video)
               }, false);
             }
@@ -1215,7 +1214,9 @@ export default {
 
     _setOrientation (orientation = 1, applyMetadata) {
       var useOriginal = applyMetadata
-      if ((orientation > 1 || useOriginal) && !this.disableAutoOrientation) {
+      console.log(' use orgin ', useOriginal)
+      console.log(' apply meta ', applyMetadata)
+      if ((orientation > 1 || useOriginal) && !this.disableExifAutoOrientation) {
         if (!this.img) return
         this.rotating = true
         // u.getRotatedImageData(useOriginal ? this.originalImage : this.img, orientation)
@@ -1223,11 +1224,9 @@ export default {
         _img.onload = () => {
           this.img = _img
           this._placeImage(applyMetadata)
-          console.log('setorient step 1')
         }
       } else {
         this._placeImage(applyMetadata)
-        console.log('setorient else step 1')
       }
 
       if (orientation == 2) {
@@ -1237,7 +1236,6 @@ export default {
         // flip y
         this.orientation = u.flipY(this.orientation)
       } else if (orientation == 6) {
-        console.log('setorient else step 2 - 6')
         // 90 deg
         this.orientation = u.rotate90(this.orientation)
       } else if (orientation == 3) {
@@ -1251,7 +1249,6 @@ export default {
       }
 
       if (useOriginal) {
-        console.log('setorient else step 3 use ori')
         this.orientation = orientation
       }
     },
@@ -1379,6 +1376,42 @@ export default {
         this._setSize()
         this._placeImage()
       }
+    },
+    getResizedImage (file, width = 1000) {
+      if (!file) {
+        return null
+      }
+      var img = new Image();
+      var imgResized = new Image();
+      var canvas = null;
+      let fileReader = new FileReader();
+      let ratio = 1;
+      fileReader.onload = (e) => {
+        let fileData = e.target.result;
+        let base64 = u.parseDataUrl(fileData);
+        // first get EXIF orientation
+        let orientation = 1;
+        try {
+          orientation = u.getFileOrientation(u.base64ToArrayBuffer(base64));
+        } catch (err) { }
+        img.src = fileData;
+        img.onload = () => {
+          ratio = img.height / img.width
+          canvas = canvasExifOrientation.drawImage(
+            img,
+            orientation,
+            0,
+            0,
+            width,
+            width * ratio
+          );
+          imgResized.src = canvas.toDataURL();
+          imgResized.onload = () => {
+            this._onload(imgResized);
+          }
+        }
+      }
+      fileReader.readAsDataURL(file);
     }
   }
 }

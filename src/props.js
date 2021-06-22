@@ -70,7 +70,7 @@ export default {
   },
   disabled: Boolean,
   disableDragAndDrop: Boolean,
-  disableAutoOrientation: Boolean,
+  disableExifAutoOrientation: Boolean,
   disableClickToChoose: Boolean,
   disableDragToMove: Boolean,
   disableScrollToZoom: Boolean,

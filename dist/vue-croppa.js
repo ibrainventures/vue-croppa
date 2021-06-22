@@ -22,7 +22,7 @@ function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-var canvasExifOrientation = createCommonjsModule(function (module, exports) {
+var canvasExifOrientation$1 = createCommonjsModule(function (module, exports) {
 (function (root, factory) {
     if (typeof undefined === 'function' && undefined.amd) {
         undefined([], factory);
@@ -262,7 +262,7 @@ var u = {
     return bytes.buffer;
   },
   getRotatedImage: function getRotatedImage(img, orientation) {
-    var _canvas = canvasExifOrientation.drawImage(img, orientation);
+    var _canvas = canvasExifOrientation$1.drawImage(img, orientation);
     var _img = new Image();
     _img.src = _canvas.toDataURL();
     return _img;
@@ -373,7 +373,7 @@ var props = {
   },
   disabled: Boolean,
   disableDragAndDrop: Boolean,
-  disableAutoOrientation: Boolean,
+  disableExifAutoOrientation: Boolean,
   disableClickToChoose: Boolean,
   disableDragToMove: Boolean,
   disableScrollToZoom: Boolean,
@@ -610,7 +610,7 @@ var component = { render: function render() {
 
     var supports = this.supportDetection();
     if (!supports.basic) {
-      console.warn('Your browser does not support vue-croppa functionality.');
+      // console.warn('Your browser does not support vue-croppa functionality.')
     }
 
     if (this.passive) {
@@ -845,7 +845,7 @@ var component = { render: function render() {
       if (this.disableRotation || this.disabled || this.passive) return;
       step = parseInt(step);
       if (isNaN(step) || step > 3 || step < -3) {
-        console.warn('Invalid argument for rotate() method. It should one of the integers from -3 to 3.');
+        // console.warn('Invalid argument for rotate() method. It should one of the integers from -3 to 3.')
         step = 1;
       }
       this._rotateByStep(step);
@@ -901,7 +901,7 @@ var component = { render: function render() {
       }
 
       if (typeof Promise == 'undefined') {
-        console.warn('No Promise support. Please add Promise polyfill if you want to use this method.');
+        // console.warn('No Promise support. Please add Promise polyfill if you want to use this method.')
         return;
       }
       return new Promise(function (resolve, reject) {
@@ -1158,7 +1158,6 @@ var component = { render: function render() {
       var orientation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
       var initial = arguments[2];
 
-      console.log('! Debug ! exif orient L730', orientation);
       if (this.imageSet) {
         this.remove(true);
       }
@@ -1271,7 +1270,7 @@ var component = { render: function render() {
               _this6._onVideoLoad(video);
             } else {
               video.addEventListener('canplay', function () {
-                console.log('can play event');
+                // console.log('can play event')
                 _this6._onVideoLoad(video);
               }, false);
             }
@@ -1613,7 +1612,9 @@ var component = { render: function render() {
       var applyMetadata = arguments[1];
 
       var useOriginal = applyMetadata;
-      if ((orientation > 1 || useOriginal) && !this.disableAutoOrientation) {
+      console.log(' use orgin ', useOriginal);
+      console.log(' apply meta ', applyMetadata);
+      if ((orientation > 1 || useOriginal) && !this.disableExifAutoOrientation) {
         if (!this.img) return;
         this.rotating = true;
         // u.getRotatedImageData(useOriginal ? this.originalImage : this.img, orientation)
@@ -1621,11 +1622,9 @@ var component = { render: function render() {
         _img.onload = function () {
           _this8.img = _img;
           _this8._placeImage(applyMetadata);
-          console.log('setorient step 1');
         };
       } else {
         this._placeImage(applyMetadata);
-        console.log('setorient else step 1');
       }
 
       if (orientation == 2) {
@@ -1635,7 +1634,6 @@ var component = { render: function render() {
         // flip y
         this.orientation = u.flipY(this.orientation);
       } else if (orientation == 6) {
-        console.log('setorient else step 2 - 6');
         // 90 deg
         this.orientation = u.rotate90(this.orientation);
       } else if (orientation == 3) {
@@ -1649,7 +1647,6 @@ var component = { render: function render() {
       }
 
       if (useOriginal) {
-        console.log('setorient else step 3 use ori');
         this.orientation = orientation;
       }
     },
@@ -1784,6 +1781,39 @@ var component = { render: function render() {
         this._setSize();
         this._placeImage();
       }
+    },
+    getResizedImage: function getResizedImage(file) {
+      var _this12 = this;
+
+      var width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
+
+      if (!file) {
+        return null;
+      }
+      var img = new Image();
+      var imgResized = new Image();
+      var canvas = null;
+      var fileReader = new FileReader();
+      var ratio = 1;
+      fileReader.onload = function (e) {
+        var fileData = e.target.result;
+        var base64 = u.parseDataUrl(fileData);
+        // first get EXIF orientation
+        var orientation = 1;
+        try {
+          orientation = u.getFileOrientation(u.base64ToArrayBuffer(base64));
+        } catch (err) {}
+        img.src = fileData;
+        img.onload = function () {
+          ratio = img.height / img.width;
+          canvas = canvasExifOrientation.drawImage(img, orientation, 0, 0, width, width * ratio);
+          imgResized.src = canvas.toDataURL();
+          imgResized.onload = function () {
+            _this12._onload(imgResized);
+          };
+        };
+      };
+      fileReader.readAsDataURL(file);
     }
   }
 };
