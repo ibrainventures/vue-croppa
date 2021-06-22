@@ -1376,42 +1376,6 @@ export default {
         this._setSize()
         this._placeImage()
       }
-    },
-    getResizedImage (file, width = 1000) {
-      if (!file) {
-        return null
-      }
-      var img = new Image();
-      var imgResized = new Image();
-      var canvas = null;
-      let fileReader = new FileReader();
-      let ratio = 1;
-      fileReader.onload = (e) => {
-        let fileData = e.target.result;
-        let base64 = u.parseDataUrl(fileData);
-        // first get EXIF orientation
-        let orientation = 1;
-        try {
-          orientation = u.getFileOrientation(u.base64ToArrayBuffer(base64));
-        } catch (err) { }
-        img.src = fileData;
-        img.onload = () => {
-          ratio = img.height / img.width
-          canvas = canvasExifOrientation.drawImage(
-            img,
-            orientation,
-            0,
-            0,
-            width,
-            width * ratio
-          );
-          imgResized.src = canvas.toDataURL();
-          imgResized.onload = () => {
-            this._onload(imgResized);
-          }
-        }
-      }
-      fileReader.readAsDataURL(file);
     }
   }
 }

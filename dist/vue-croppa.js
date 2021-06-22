@@ -22,7 +22,7 @@ function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-var canvasExifOrientation$1 = createCommonjsModule(function (module, exports) {
+var canvasExifOrientation = createCommonjsModule(function (module, exports) {
 (function (root, factory) {
     if (typeof undefined === 'function' && undefined.amd) {
         undefined([], factory);
@@ -262,7 +262,7 @@ var u = {
     return bytes.buffer;
   },
   getRotatedImage: function getRotatedImage(img, orientation) {
-    var _canvas = canvasExifOrientation$1.drawImage(img, orientation);
+    var _canvas = canvasExifOrientation.drawImage(img, orientation);
     var _img = new Image();
     _img.src = _canvas.toDataURL();
     return _img;
@@ -1781,39 +1781,6 @@ var component = { render: function render() {
         this._setSize();
         this._placeImage();
       }
-    },
-    getResizedImage: function getResizedImage(file) {
-      var _this12 = this;
-
-      var width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
-
-      if (!file) {
-        return null;
-      }
-      var img = new Image();
-      var imgResized = new Image();
-      var canvas = null;
-      var fileReader = new FileReader();
-      var ratio = 1;
-      fileReader.onload = function (e) {
-        var fileData = e.target.result;
-        var base64 = u.parseDataUrl(fileData);
-        // first get EXIF orientation
-        var orientation = 1;
-        try {
-          orientation = u.getFileOrientation(u.base64ToArrayBuffer(base64));
-        } catch (err) {}
-        img.src = fileData;
-        img.onload = function () {
-          ratio = img.height / img.width;
-          canvas = canvasExifOrientation.drawImage(img, orientation, 0, 0, width, width * ratio);
-          imgResized.src = canvas.toDataURL();
-          imgResized.onload = function () {
-            _this12._onload(imgResized);
-          };
-        };
-      };
-      fileReader.readAsDataURL(file);
     }
   }
 };
