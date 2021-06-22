@@ -6,6 +6,7 @@
 
 ## Features
 
+* **new**: disableExifAutoOrientation
 * **Straightforward**: What you see is what you get
 * **Highly customizable**: You can almost customize anything except the core functionalities
 * **Mobile-friendly**: Supports drag to move and pinch with two fingers to zoom on mobile devices
@@ -36,6 +37,7 @@
         :quality="2"
         :zoom-speed="3"
         :disabled="false"
+        :disable-exif-auto-orientation="false"
         :disable-drag-and-drop="false"
         :disable-click-to-choose="false"
         :disable-drag-to-move="false"
@@ -261,6 +263,14 @@ Limits the byte size of file that users can choose. If set to `0`, then no limit
 #### disabled
 
 Disables user interaction.
+
+* type: `boolean`
+* default: `false`
+
+
+#### disable-exif-auto-orientation
+
+Disables the auto exif orientation by param
 
 * type: `boolean`
 * default: `false`

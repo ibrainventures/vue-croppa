@@ -1612,8 +1612,6 @@ var component = { render: function render() {
       var applyMetadata = arguments[1];
 
       var useOriginal = applyMetadata;
-      console.log(' use orgin ', useOriginal);
-      console.log(' apply meta ', applyMetadata);
       if ((orientation > 1 || useOriginal) && !this.disableExifAutoOrientation) {
         if (!this.img) return;
         this.rotating = true;
