@@ -1169,10 +1169,7 @@ var component = { render: function render() {
         orientation = 1;
       }
 
-      if (!this.disableAutoOrientation) {
-        console.log('auto orientation');
-        this._setOrientation(orientation);
-      }
+      this._setOrientation(orientation);
 
       if (initial) {
         this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT);
@@ -1612,7 +1609,7 @@ var component = { render: function render() {
     _setOrientation: function _setOrientation() {
       var _this8 = this;
 
-      var orientation = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 6;
+      var orientation = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       var applyMetadata = arguments[1];
 
       var useOriginal = applyMetadata;
@@ -1624,9 +1621,11 @@ var component = { render: function render() {
         _img.onload = function () {
           _this8.img = _img;
           _this8._placeImage(applyMetadata);
+          console.log('setorient step 1');
         };
       } else {
         this._placeImage(applyMetadata);
+        console.log('setorient else step 1');
       }
 
       if (orientation == 2) {
@@ -1636,6 +1635,7 @@ var component = { render: function render() {
         // flip y
         this.orientation = u.flipY(this.orientation);
       } else if (orientation == 6) {
+        console.log('setorient else step 2 - 6');
         // 90 deg
         this.orientation = u.rotate90(this.orientation);
       } else if (orientation == 3) {
@@ -1649,6 +1649,7 @@ var component = { render: function render() {
       }
 
       if (useOriginal) {
+        console.log('setorient else step 3 use ori');
         this.orientation = orientation;
       }
     },

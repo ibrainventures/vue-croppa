@@ -761,10 +761,7 @@ export default {
         orientation = 1
       }
 
-      if (!this.disableAutoOrientation) {
-        console.log('auto orientation')
-        this._setOrientation(orientation)
-      }
+      this._setOrientation(orientation)
 
       if (initial) {
         this.emitEvent(events.INITIAL_IMAGE_LOADED_EVENT)
@@ -1216,7 +1213,7 @@ export default {
       }
     },
 
-    _setOrientation (orientation = 6, applyMetadata) {
+    _setOrientation (orientation = 1, applyMetadata) {
       var useOriginal = applyMetadata
       if (orientation > 1 || useOriginal) {
         if (!this.img) return
@@ -1226,9 +1223,11 @@ export default {
         _img.onload = () => {
           this.img = _img
           this._placeImage(applyMetadata)
+          console.log('setorient step 1')
         }
       } else {
         this._placeImage(applyMetadata)
+        console.log('setorient else step 1')
       }
 
       if (orientation == 2) {
@@ -1238,6 +1237,7 @@ export default {
         // flip y
         this.orientation = u.flipY(this.orientation)
       } else if (orientation == 6) {
+        console.log('setorient else step 2 - 6')
         // 90 deg
         this.orientation = u.rotate90(this.orientation)
       } else if (orientation == 3) {
@@ -1251,6 +1251,7 @@ export default {
       }
 
       if (useOriginal) {
+        console.log('setorient else step 3 use ori')
         this.orientation = orientation
       }
     },
