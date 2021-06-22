@@ -2,7 +2,7 @@
  * vue-croppa v1.3.8
  * https://github.com/zhanziyang/vue-croppa
  * 
- * Copyright (c) 2020 zhanziyang
+ * Copyright (c) 2021 zhanziyang
  * Released under the ISC license
  */
   
@@ -1157,6 +1157,7 @@ var component = { render: function render() {
       var orientation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
       var initial = arguments[2];
 
+      console.log('! Debug ! exif orient L730', orientation);
       if (this.imageSet) {
         this.remove(true);
       }

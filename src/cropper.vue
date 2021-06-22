@@ -1,23 +1,39 @@
 <template>
-  <div ref="wrapper"
-    :class="`croppa-container ${img ? 'croppa--has-target' : ''} ${passive ? 'croppa--passive' : ''} ${disabled ? 'croppa--disabled' : ''} ${disableClickToChoose ? 'croppa--disabled-cc' : ''} ${disableDragToMove && disableScrollToZoom ? 'croppa--disabled-mz' : ''} ${fileDraggedOver ? 'croppa--dropzone' : ''}`"
+  <div
+    ref="wrapper"
+    :class="`croppa-container ${img ? 'croppa--has-target' : ''} ${
+      passive ? 'croppa--passive' : ''
+    } ${disabled ? 'croppa--disabled' : ''} ${
+      disableClickToChoose ? 'croppa--disabled-cc' : ''
+    } ${
+      disableDragToMove && disableScrollToZoom ? 'croppa--disabled-mz' : ''
+    } ${fileDraggedOver ? 'croppa--dropzone' : ''}`"
     @dragenter.stop.prevent="_handleDragEnter"
     @dragleave.stop.prevent="_handleDragLeave"
     @dragover.stop.prevent="_handleDragOver"
-    @drop.stop.prevent="_handleDrop">
-    <input type="file"
+    @drop.stop.prevent="_handleDrop"
+  >
+    <input
+      type="file"
       :accept="accept"
       :disabled="disabled"
       v-bind="inputAttrs"
       ref="fileInput"
       @change="_handleInputChange"
-      style="height:1px;width:1px;overflow:hidden;margin-left:-99999px;position:absolute;" />
-    <div class="slots"
-      style="width: 0; height: 0; visibility: hidden;">
+      style="
+        height: 1px;
+        width: 1px;
+        overflow: hidden;
+        margin-left: -99999px;
+        position: absolute;
+      "
+    />
+    <div class="slots" style="width: 0; height: 0; visibility: hidden">
       <slot name="initial"></slot>
       <slot name="placeholder"></slot>
     </div>
-    <canvas ref="canvas"
+    <canvas
+      ref="canvas"
       @click.stop.prevent="_handleClick"
       @dblclick.stop.prevent="_handleDblClick"
       @touchstart.stop="_handlePointerStart"
@@ -34,28 +50,35 @@
       @pointerleave.stop.prevent="_handlePointerLeave"
       @DOMMouseScroll.stop="_handleWheel"
       @wheel.stop="_handleWheel"
-      @mousewheel.stop="_handleWheel"></canvas>
-    <svg class="icon icon-remove"
+      @mousewheel.stop="_handleWheel"
+    ></canvas>
+    <svg
+      class="icon icon-remove"
       v-if="showRemoveButton && img && !passive"
       @click="remove"
-      :style="`top: -${height/40}px; right: -${width/40}px`"
+      :style="`top: -${height / 40}px; right: -${width / 40}px`"
       viewBox="0 0 1024 1024"
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
-      :width="removeButtonSize || width/10"
-      :height="removeButtonSize || width/10">
-      <path d="M511.921231 0C229.179077 0 0 229.257846 0 512 0 794.702769 229.179077 1024 511.921231 1024 794.781538 1024 1024 794.702769 1024 512 1024 229.257846 794.781538 0 511.921231 0ZM732.041846 650.633846 650.515692 732.081231C650.515692 732.081231 521.491692 593.683692 511.881846 593.683692 502.429538 593.683692 373.366154 732.081231 373.366154 732.081231L291.761231 650.633846C291.761231 650.633846 430.316308 523.500308 430.316308 512.196923 430.316308 500.696615 291.761231 373.523692 291.761231 373.523692L373.366154 291.918769C373.366154 291.918769 503.453538 430.395077 511.881846 430.395077 520.349538 430.395077 650.515692 291.918769 650.515692 291.918769L732.041846 373.523692C732.041846 373.523692 593.447385 502.547692 593.447385 512.196923 593.447385 521.412923 732.041846 650.633846 732.041846 650.633846Z"
-        :fill="removeButtonColor"></path>
+      :width="removeButtonSize || width / 10"
+      :height="removeButtonSize || width / 10"
+    >
+      <path
+        d="M511.921231 0C229.179077 0 0 229.257846 0 512 0 794.702769 229.179077 1024 511.921231 1024 794.781538 1024 1024 794.702769 1024 512 1024 229.257846 794.781538 0 511.921231 0ZM732.041846 650.633846 650.515692 732.081231C650.515692 732.081231 521.491692 593.683692 511.881846 593.683692 502.429538 593.683692 373.366154 732.081231 373.366154 732.081231L291.761231 650.633846C291.761231 650.633846 430.316308 523.500308 430.316308 512.196923 430.316308 500.696615 291.761231 373.523692 291.761231 373.523692L373.366154 291.918769C373.366154 291.918769 503.453538 430.395077 511.881846 430.395077 520.349538 430.395077 650.515692 291.918769 650.515692 291.918769L732.041846 373.523692C732.041846 373.523692 593.447385 502.547692 593.447385 512.196923 593.447385 521.412923 732.041846 650.633846 732.041846 650.633846Z"
+        :fill="removeButtonColor"
+      ></path>
     </svg>
-    <div class="sk-fading-circle"
+    <div
+      class="sk-fading-circle"
       :style="loadingStyle"
-      v-if="showLoading && loading">
-      <div :class="`sk-circle${i} sk-circle`"
-        v-for="i in 12"
-        :key="i">
-        <div class="sk-circle-indicator"
-          :style="{backgroundColor: loadingColor}"></div>
+      v-if="showLoading && loading"
+    >
+      <div :class="`sk-circle${i} sk-circle`" v-for="i in 12" :key="i">
+        <div
+          class="sk-circle-indicator"
+          :style="{ backgroundColor: loadingColor }"
+        ></div>
       </div>
     </div>
     <slot></slot>
@@ -154,10 +177,10 @@ export default {
     },
 
     loading: {
-      get: function() {
+      get: function () {
         return this._loading
       },
-      set: function(newValue) {
+      set: function (newValue) {
         let oldValue = this._loading
         this._loading = newValue
         if (oldValue != newValue) {
@@ -727,6 +750,7 @@ export default {
     },
 
     _onload (img, orientation = 1, initial) {
+      console.log('! Debug ! exif orient L730', orientation)
       if (this.imageSet) {
         this.remove(true)
       }
@@ -1448,7 +1472,10 @@ export default {
 
   @for $i from 2 through $circleCount {
     .sk-circle#{$i} .sk-circle-indicator {
-      animation-delay: -$animationDuration + $animationDuration / $circleCount * ($i - 1);
+      animation-delay: -$animationDuration +
+        $animationDuration /
+        $circleCount *
+        ($i - 1);
     }
   }
 }
