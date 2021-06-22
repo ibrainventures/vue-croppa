@@ -1215,7 +1215,7 @@ export default {
 
     _setOrientation (orientation = 1, applyMetadata) {
       var useOriginal = applyMetadata
-      if (orientation > 1 || useOriginal) {
+      if ((orientation > 1 || useOriginal) && !this.disableAutoOrientation) {
         if (!this.img) return
         this.rotating = true
         // u.getRotatedImageData(useOriginal ? this.originalImage : this.img, orientation)

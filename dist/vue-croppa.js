@@ -1613,7 +1613,7 @@ var component = { render: function render() {
       var applyMetadata = arguments[1];
 
       var useOriginal = applyMetadata;
-      if (orientation > 1 || useOriginal) {
+      if ((orientation > 1 || useOriginal) && !this.disableAutoOrientation) {
         if (!this.img) return;
         this.rotating = true;
         // u.getRotatedImageData(useOriginal ? this.originalImage : this.img, orientation)
