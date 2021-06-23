@@ -660,7 +660,6 @@ export default {
     },
 
     _setImagePlaceholder () {
-      console.log('set _setImagePlaceholder text st')
       let img
       if (this.$slots.placeholder && this.$slots.placeholder[0]) {
         let vNode = this.$slots.placeholder[0]
@@ -684,7 +683,6 @@ export default {
     },
 
     _setTextPlaceholder () {
-      console.log('placeholder text st')
       var ctx = this.ctx
       ctx.textBaseline = 'middle'
       ctx.textAlign = 'center'
@@ -696,12 +694,10 @@ export default {
     },
 
     _setPlaceholders () {
-      console.log('set _paintBackground text st')
       this._paintBackground()
-      console.log('set _setImagePlaceholder text st')
       this._setImagePlaceholder()
-      console.log('set _setTextPlaceholder text st')
       this._setTextPlaceholder()
+      this.$nextTick(this._draw)
     },
 
     _setInitial () {

@@ -1062,7 +1062,6 @@ var component = { render: function render() {
     _setImagePlaceholder: function _setImagePlaceholder() {
       var _this3 = this;
 
-      console.log('set _setImagePlaceholder text st');
       var img = void 0;
       if (this.$slots.placeholder && this.$slots.placeholder[0]) {
         var vNode = this.$slots.placeholder[0];
@@ -1087,7 +1086,6 @@ var component = { render: function render() {
       }
     },
     _setTextPlaceholder: function _setTextPlaceholder() {
-      console.log('placeholder text st');
       var ctx = this.ctx;
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'center';
@@ -1098,12 +1096,10 @@ var component = { render: function render() {
       ctx.fillText(this.placeholder, this.outputWidth / 2, this.outputHeight / 2);
     },
     _setPlaceholders: function _setPlaceholders() {
-      console.log('set _paintBackground text st');
       this._paintBackground();
-      console.log('set _setImagePlaceholder text st');
       this._setImagePlaceholder();
-      console.log('set _setTextPlaceholder text st');
       this._setTextPlaceholder();
+      this.$nextTick(this._draw);
     },
     _setInitial: function _setInitial() {
       var _this4 = this;
