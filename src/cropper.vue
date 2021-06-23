@@ -695,8 +695,9 @@ export default {
 
     _setPlaceholders () {
       this._paintBackground()
-      this._setImagePlaceholder()
       this._setTextPlaceholder()
+      this._setImagePlaceholder()
+
     },
 
     _setInitial () {

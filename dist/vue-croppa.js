@@ -1097,8 +1097,8 @@ var component = { render: function render() {
     },
     _setPlaceholders: function _setPlaceholders() {
       this._paintBackground();
-      this._setImagePlaceholder();
       this._setTextPlaceholder();
+      this._setImagePlaceholder();
     },
     _setInitial: function _setInitial() {
       var _this4 = this;
