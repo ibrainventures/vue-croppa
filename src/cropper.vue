@@ -95,7 +95,6 @@ const MIN_MS_PER_CLICK = 500 // If touch duration is shorter than the value, the
 const CLICK_MOVE_THRESHOLD = 100 // If touch move distance is greater than this value, then it will by no mean be considered as a click.
 const MIN_WIDTH = 10 // The minimal width the user can zoom to.
 const DEFAULT_PLACEHOLDER_TAKEUP = 2 / 3 // Placeholder text by default takes up this amount of times of canvas width.
-// const DEFAULT_PLACEHOLDER_TAKEUP = 1 / 1 // Placeholder text by default takes up this amount of times of canvas width.
 const PINCH_ACCELERATION = 1 // The amount of times by which the pinching is more sensitive than the scolling
 
 const syncData = ['imgData', 'img', 'imgSet', 'originalImage', 'naturalHeight', 'naturalWidth', 'orientation', 'scaleRatio']
@@ -661,6 +660,7 @@ export default {
     },
 
     _setImagePlaceholder () {
+      console.log('set _setImagePlaceholder text st')
       let img
       if (this.$slots.placeholder && this.$slots.placeholder[0]) {
         let vNode = this.$slots.placeholder[0]
@@ -684,6 +684,7 @@ export default {
     },
 
     _setTextPlaceholder () {
+      console.log('placeholder text st')
       var ctx = this.ctx
       ctx.textBaseline = 'middle'
       ctx.textAlign = 'center'
@@ -695,10 +696,12 @@ export default {
     },
 
     _setPlaceholders () {
-      this.$nextTick(() => { this._paintBackground() })
-      // this._paintBackground()
-      this.$nextTick(() => { this._setImagePlaceholder() })
-      this.$nextTick(() => { this._setTextPlaceholder() })
+      console.log('set _paintBackground text st')
+      this._paintBackground()
+      console.log('set _setImagePlaceholder text st')
+      this._setImagePlaceholder()
+      console.log('set _setTextPlaceholder text st')
+      this._setTextPlaceholder()
     },
 
     _setInitial () {
