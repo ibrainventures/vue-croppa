@@ -1099,7 +1099,6 @@ var component = { render: function render() {
       this._paintBackground();
       this._setImagePlaceholder();
       this._setTextPlaceholder();
-      this.$nextTick(this._draw);
     },
     _setInitial: function _setInitial() {
       var _this4 = this;
@@ -1126,6 +1125,7 @@ var component = { render: function render() {
         img = this.initialImage;
       }
       if (!src && !img) {
+        this._setPlaceholders();
         this._setPlaceholders();
         return;
       }
