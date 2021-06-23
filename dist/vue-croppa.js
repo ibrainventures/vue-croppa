@@ -1126,7 +1126,6 @@ var component = { render: function render() {
       }
       if (!src && !img) {
         this._setPlaceholders();
-        this._setPlaceholders();
         return;
       }
       this.currentIsInitial = true;

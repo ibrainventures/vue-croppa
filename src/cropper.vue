@@ -697,7 +697,6 @@ export default {
       this._paintBackground()
       this._setImagePlaceholder()
       this._setTextPlaceholder()
-
     },
 
     _setInitial () {
@@ -720,7 +719,6 @@ export default {
         img = this.initialImage
       }
       if (!src && !img) {
-        this._setPlaceholders()
         this._setPlaceholders()
         return
       }
