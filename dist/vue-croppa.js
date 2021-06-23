@@ -456,7 +456,8 @@ var PCT_PER_ZOOM = 1 / 100000; // The amount of zooming everytime it happens, in
 var MIN_MS_PER_CLICK = 500; // If touch duration is shorter than the value, then it is considered as a click.
 var CLICK_MOVE_THRESHOLD = 100; // If touch move distance is greater than this value, then it will by no mean be considered as a click.
 var MIN_WIDTH = 10; // The minimal width the user can zoom to.
-var DEFAULT_PLACEHOLDER_TAKEUP = 2 / 3; // Placeholder text by default takes up this amount of times of canvas width.
+// const DEFAULT_PLACEHOLDER_TAKEUP = 2 / 3 // Placeholder text by default takes up this amount of times of canvas width.
+var DEFAULT_PLACEHOLDER_TAKEUP = 1 / 1; // Placeholder text by default takes up this amount of times of canvas width.
 var PINCH_ACCELERATION = 1; // The amount of times by which the pinching is more sensitive than the scolling
 
 var syncData = ['imgData', 'img', 'imgSet', 'originalImage', 'naturalHeight', 'naturalWidth', 'orientation', 'scaleRatio'];
@@ -1097,8 +1098,8 @@ var component = { render: function render() {
     },
     _setPlaceholders: function _setPlaceholders() {
       this._paintBackground();
-      this._setTextPlaceholder();
       this._setImagePlaceholder();
+      this._setTextPlaceholder();
     },
     _setInitial: function _setInitial() {
       var _this4 = this;
