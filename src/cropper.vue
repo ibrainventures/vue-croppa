@@ -1057,6 +1057,9 @@ export default {
       for (let i = 0, len = cancelEvents.length; i < len; i++) {
         let e = cancelEvents[i]
         document.addEventListener(e, this._handlePointerEnd)
+        this.$on('hook:beforeDestroy', () => {
+          document.removeEventListener(e, this._handlePointerEnd)
+        })
       }
     },
 

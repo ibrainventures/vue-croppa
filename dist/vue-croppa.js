@@ -2,7 +2,7 @@
  * vue-croppa v1.3.8
  * https://github.com/zhanziyang/vue-croppa
  * 
- * Copyright (c) 2021 zhanziyang
+ * Copyright (c) 2022 zhanziyang
  * Released under the ISC license
  */
   
@@ -1426,6 +1426,8 @@ var component = { render: function render() {
       this.imgData.startY = -(this.imgData.height - this.outputHeight) / 2;
     },
     _handlePointerStart: function _handlePointerStart(evt) {
+      var _this7 = this;
+
       this.emitNativeEvent(evt);
       if (this.passive) return;
       this.supportTouch = true;
@@ -1456,9 +1458,17 @@ var component = { render: function render() {
       }
 
       var cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel'];
-      for (var i = 0, len = cancelEvents.length; i < len; i++) {
+
+      var _loop = function _loop(i, len) {
         var e = cancelEvents[i];
-        document.addEventListener(e, this._handlePointerEnd);
+        document.addEventListener(e, _this7._handlePointerEnd);
+        _this7.$on('hook:beforeDestroy', function () {
+          document.removeEventListener(e, _this7._handlePointerEnd);
+        });
+      };
+
+      for (var i = 0, len = cancelEvents.length; i < len; i++) {
+        _loop(i, len);
       }
     },
     _handlePointerEnd: function _handlePointerEnd(evt) {
@@ -1522,7 +1532,7 @@ var component = { render: function render() {
       this.currentPointerCoord = null;
     },
     _handleWheel: function _handleWheel(evt) {
-      var _this7 = this;
+      var _this8 = this;
 
       this.emitNativeEvent(evt);
       if (this.passive) return;
@@ -1535,7 +1545,7 @@ var component = { render: function render() {
         this.zoom(!this.reverseScrollToZoom);
       }
       this.$nextTick(function () {
-        _this7.scrolling = false;
+        _this8.scrolling = false;
       });
     },
     _handleDragEnter: function _handleDragEnter(evt) {
@@ -1606,7 +1616,7 @@ var component = { render: function render() {
       }
     },
     _setOrientation: function _setOrientation() {
-      var _this8 = this;
+      var _this9 = this;
 
       var orientation = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       var applyMetadata = arguments[1];
@@ -1618,8 +1628,8 @@ var component = { render: function render() {
         // u.getRotatedImageData(useOriginal ? this.originalImage : this.img, orientation)
         var _img = u.getRotatedImage(useOriginal ? this.originalImage : this.img, orientation);
         _img.onload = function () {
-          _this8.img = _img;
-          _this8._placeImage(applyMetadata);
+          _this9.img = _img;
+          _this9._placeImage(applyMetadata);
         };
       } else {
         this._placeImage(applyMetadata);
@@ -1655,13 +1665,13 @@ var component = { render: function render() {
       this.ctx.fillRect(0, 0, this.outputWidth, this.outputHeight);
     },
     _draw: function _draw() {
-      var _this9 = this;
+      var _this10 = this;
 
       this.$nextTick(function () {
         if (typeof window !== 'undefined' && window.requestAnimationFrame) {
-          requestAnimationFrame(_this9._drawFrame);
+          requestAnimationFrame(_this10._drawFrame);
         } else {
-          _this9._drawFrame();
+          _this10._drawFrame();
         }
       });
     },
@@ -1707,12 +1717,12 @@ var component = { render: function render() {
       ctx.closePath();
     },
     _createContainerClipPath: function _createContainerClipPath() {
-      var _this10 = this;
+      var _this11 = this;
 
       this._clipPathFactory(0, 0, this.outputWidth, this.outputHeight);
       if (this.clipPlugins && this.clipPlugins.length) {
         this.clipPlugins.forEach(function (func) {
-          func(_this10.ctx, 0, 0, _this10.outputWidth, _this10.outputHeight);
+          func(_this11.ctx, 0, 0, _this11.outputWidth, _this11.outputHeight);
         });
       }
     },
@@ -1744,7 +1754,7 @@ var component = { render: function render() {
       ctx.restore();
     },
     _applyMetadata: function _applyMetadata() {
-      var _this11 = this;
+      var _this12 = this;
 
       if (!this.userMetadata) return;
       var _userMetadata = this.userMetadata,
@@ -1766,7 +1776,7 @@ var component = { render: function render() {
       }
 
       this.$nextTick(function () {
-        _this11.userMetadata = null;
+        _this12.userMetadata = null;
       });
     },
     onDimensionChange: function onDimensionChange() {
