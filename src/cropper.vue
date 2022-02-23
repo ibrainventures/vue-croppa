@@ -221,6 +221,15 @@ export default {
     if (this.useAutoSizing) {
       this._autoSizingInit()
     }
+
+    let cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel']
+    for (let i = 0, len = cancelEvents.length; i < len; i++) {
+      let e = cancelEvents[i]
+      document.addEventListener(e, this._handlePointerEnd)
+      this.$on('hook:beforeDestroy', () => {
+        document.removeEventListener(e, this._handlePointerEnd)
+      })
+    }
   },
 
   beforeDestroy () {
@@ -1038,15 +1047,14 @@ export default {
         this.pinchDistance = u.getPinchDistance(evt, this)
       }
 
-      let cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel']
-      for (let i = 0, len = cancelEvents.length; i < len; i++) {
-        let e = cancelEvents[i]
-        console.log('croppa event added')
-        document.addEventListener(e, this._handlePointerEnd)
-        this.$on('hook:beforeDestroy', () => {
-          document.removeEventListener(e, this._handlePointerEnd)
-        })
-      }
+      // let cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel']
+      // for (let i = 0, len = cancelEvents.length; i < len; i++) {
+      //   let e = cancelEvents[i]
+      //   document.addEventListener(e, this._handlePointerEnd)
+      //   this.$on('hook:beforeDestroy', () => {
+      //     document.removeEventListener(e, this._handlePointerEnd)
+      //   })
+      // }
     },
 
     _handlePointerEnd (evt) {

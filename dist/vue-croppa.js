@@ -644,6 +644,20 @@ var component = { render: function render() {
     if (this.useAutoSizing) {
       this._autoSizingInit();
     }
+
+    var cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel'];
+
+    var _loop = function _loop(i, len) {
+      var e = cancelEvents[i];
+      document.addEventListener(e, _this._handlePointerEnd);
+      _this.$on('hook:beforeDestroy', function () {
+        document.removeEventListener(e, _this._handlePointerEnd);
+      });
+    };
+
+    for (var i = 0, len = cancelEvents.length; i < len; i++) {
+      _loop(i, len);
+    }
   },
   beforeDestroy: function beforeDestroy() {
     if (this.useAutoSizing) {
@@ -1426,8 +1440,6 @@ var component = { render: function render() {
       this.imgData.startY = -(this.imgData.height - this.outputHeight) / 2;
     },
     _handlePointerStart: function _handlePointerStart(evt) {
-      var _this7 = this;
-
       this.emitNativeEvent(evt);
       if (this.passive) return;
       this.supportTouch = true;
@@ -1457,20 +1469,14 @@ var component = { render: function render() {
         this.pinchDistance = u.getPinchDistance(evt, this);
       }
 
-      var cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel'];
-
-      var _loop = function _loop(i, len) {
-        var e = cancelEvents[i];
-        console.log('croppa event added');
-        document.addEventListener(e, _this7._handlePointerEnd);
-        _this7.$on('hook:beforeDestroy', function () {
-          document.removeEventListener(e, _this7._handlePointerEnd);
-        });
-      };
-
-      for (var i = 0, len = cancelEvents.length; i < len; i++) {
-        _loop(i, len);
-      }
+      // let cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel']
+      // for (let i = 0, len = cancelEvents.length; i < len; i++) {
+      //   let e = cancelEvents[i]
+      //   document.addEventListener(e, this._handlePointerEnd)
+      //   this.$on('hook:beforeDestroy', () => {
+      //     document.removeEventListener(e, this._handlePointerEnd)
+      //   })
+      // }
     },
     _handlePointerEnd: function _handlePointerEnd(evt) {
       this.emitNativeEvent(evt);
@@ -1533,7 +1539,7 @@ var component = { render: function render() {
       this.currentPointerCoord = null;
     },
     _handleWheel: function _handleWheel(evt) {
-      var _this8 = this;
+      var _this7 = this;
 
       this.emitNativeEvent(evt);
       if (this.passive) return;
@@ -1546,7 +1552,7 @@ var component = { render: function render() {
         this.zoom(!this.reverseScrollToZoom);
       }
       this.$nextTick(function () {
-        _this8.scrolling = false;
+        _this7.scrolling = false;
       });
     },
     _handleDragEnter: function _handleDragEnter(evt) {
@@ -1617,7 +1623,7 @@ var component = { render: function render() {
       }
     },
     _setOrientation: function _setOrientation() {
-      var _this9 = this;
+      var _this8 = this;
 
       var orientation = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       var applyMetadata = arguments[1];
@@ -1629,8 +1635,8 @@ var component = { render: function render() {
         // u.getRotatedImageData(useOriginal ? this.originalImage : this.img, orientation)
         var _img = u.getRotatedImage(useOriginal ? this.originalImage : this.img, orientation);
         _img.onload = function () {
-          _this9.img = _img;
-          _this9._placeImage(applyMetadata);
+          _this8.img = _img;
+          _this8._placeImage(applyMetadata);
         };
       } else {
         this._placeImage(applyMetadata);
@@ -1666,13 +1672,13 @@ var component = { render: function render() {
       this.ctx.fillRect(0, 0, this.outputWidth, this.outputHeight);
     },
     _draw: function _draw() {
-      var _this10 = this;
+      var _this9 = this;
 
       this.$nextTick(function () {
         if (typeof window !== 'undefined' && window.requestAnimationFrame) {
-          requestAnimationFrame(_this10._drawFrame);
+          requestAnimationFrame(_this9._drawFrame);
         } else {
-          _this10._drawFrame();
+          _this9._drawFrame();
         }
       });
     },
@@ -1718,12 +1724,12 @@ var component = { render: function render() {
       ctx.closePath();
     },
     _createContainerClipPath: function _createContainerClipPath() {
-      var _this11 = this;
+      var _this10 = this;
 
       this._clipPathFactory(0, 0, this.outputWidth, this.outputHeight);
       if (this.clipPlugins && this.clipPlugins.length) {
         this.clipPlugins.forEach(function (func) {
-          func(_this11.ctx, 0, 0, _this11.outputWidth, _this11.outputHeight);
+          func(_this10.ctx, 0, 0, _this10.outputWidth, _this10.outputHeight);
         });
       }
     },
@@ -1755,7 +1761,7 @@ var component = { render: function render() {
       ctx.restore();
     },
     _applyMetadata: function _applyMetadata() {
-      var _this12 = this;
+      var _this11 = this;
 
       if (!this.userMetadata) return;
       var _userMetadata = this.userMetadata,
@@ -1777,7 +1783,7 @@ var component = { render: function render() {
       }
 
       this.$nextTick(function () {
-        _this12.userMetadata = null;
+        _this11.userMetadata = null;
       });
     },
     onDimensionChange: function onDimensionChange() {
