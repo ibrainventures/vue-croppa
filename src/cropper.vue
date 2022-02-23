@@ -1,11 +1,9 @@
 <template>
   <div
     ref="wrapper"
-    :class="`croppa-container ${img ? 'croppa--has-target' : ''} ${
-      passive ? 'croppa--passive' : ''
-    } ${disabled ? 'croppa--disabled' : ''} ${
-      disableClickToChoose ? 'croppa--disabled-cc' : ''
-    } ${
+    :class="`croppa-container ${img ? 'croppa--has-target' : ''} ${passive ? 'croppa--passive' : ''} ${
+      disabled ? 'croppa--disabled' : ''
+    } ${disableClickToChoose ? 'croppa--disabled-cc' : ''} ${
       disableDragToMove && disableScrollToZoom ? 'croppa--disabled-mz' : ''
     } ${fileDraggedOver ? 'croppa--dropzone' : ''}`"
     @dragenter.stop.prevent="_handleDragEnter"
@@ -20,13 +18,7 @@
       v-bind="inputAttrs"
       ref="fileInput"
       @change="_handleInputChange"
-      style="
-        height: 1px;
-        width: 1px;
-        overflow: hidden;
-        margin-left: -99999px;
-        position: absolute;
-      "
+      style="height: 1px; width: 1px; overflow: hidden; margin-left: -99999px; position: absolute"
     />
     <div class="slots" style="width: 0; height: 0; visibility: hidden">
       <slot name="initial"></slot>
@@ -69,16 +61,9 @@
         :fill="removeButtonColor"
       ></path>
     </svg>
-    <div
-      class="sk-fading-circle"
-      :style="loadingStyle"
-      v-if="showLoading && loading"
-    >
+    <div class="sk-fading-circle" :style="loadingStyle" v-if="showLoading && loading">
       <div :class="`sk-circle${i} sk-circle`" v-for="i in 12" :key="i">
-        <div
-          class="sk-circle-indicator"
-          :style="{ backgroundColor: loadingColor }"
-        ></div>
+        <div class="sk-circle-indicator" :style="{ backgroundColor: loadingColor }"></div>
       </div>
     </div>
     <slot></slot>
@@ -1056,6 +1041,7 @@ export default {
       let cancelEvents = ['mouseup', 'touchend', 'touchcancel', 'pointerend', 'pointercancel']
       for (let i = 0, len = cancelEvents.length; i < len; i++) {
         let e = cancelEvents[i]
+        console.log('croppa event added')
         document.addEventListener(e, this._handlePointerEnd)
         this.$on('hook:beforeDestroy', () => {
           document.removeEventListener(e, this._handlePointerEnd)
@@ -1474,10 +1460,7 @@ export default {
 
   @for $i from 2 through $circleCount {
     .sk-circle#{$i} .sk-circle-indicator {
-      animation-delay: -$animationDuration +
-        $animationDuration /
-        $circleCount *
-        ($i - 1);
+      animation-delay: -$animationDuration + $animationDuration / $circleCount * ($i - 1);
     }
   }
 }

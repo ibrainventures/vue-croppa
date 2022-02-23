@@ -1461,6 +1461,7 @@ var component = { render: function render() {
 
       var _loop = function _loop(i, len) {
         var e = cancelEvents[i];
+        console.log('croppa event added');
         document.addEventListener(e, _this7._handlePointerEnd);
         _this7.$on('hook:beforeDestroy', function () {
           document.removeEventListener(e, _this7._handlePointerEnd);
